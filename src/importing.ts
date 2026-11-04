@@ -2,7 +2,7 @@ import { type DemoData, type Product } from './data.ts';
 import { addPosition, canonical, saveProduct } from './domain.ts';
 
 export type SheetRows = unknown[][];
-export type ImportRow = { line: number; code: string; product: string; lot: string; location: string; quantity: string; error?: string };
+export type ImportRow = { line: number; code: string; product: string; lot: string; location: string; expiresAt: string; quantity: string; error?: string };
 const required = ['codigo', 'produto', 'especialidade', 'lote', 'local', 'validade', 'quantidade'];
 export const template = 'codigo;produto;especialidade;minimo;fabricante;fornecedor;lote;local;validade;quantidade\nDEMO-NOVO-001;Produto de exemplo;Ortopedia;2;Fabricante exemplo;Fornecedor exemplo;DEMO-001;Curitiba · A3-01-01;2028-12-31;10';
 
@@ -51,7 +51,7 @@ export function inspectImport(rows: SheetRows, data: DemoData): { rows: ImportRo
     if (cells.every((cell) => !cellText(cell))) return;
     const raw = (key: string) => cells[headers.indexOf(key)];
     const get = (key: string) => cellText(raw(key));
-    const result: ImportRow = { line: index + 2, code: get('codigo'), product: get('produto'), lot: get('lote'), location: get('local'), quantity: get('quantidade') };
+    const result: ImportRow = { line: index + 2, code: get('codigo'), product: get('produto'), lot: get('lote'), location: get('local'), expiresAt: dateText(raw('validade')), quantity: get('quantidade') };
     try {
       if (typeof raw('codigo') === 'number' || typeof raw('lote') === 'number') throw new Error('Formate código e lote como texto no Excel para preservar zeros iniciais.');
       const existing = next.products.find((p) => canonical(p.code) === canonical(result.code));

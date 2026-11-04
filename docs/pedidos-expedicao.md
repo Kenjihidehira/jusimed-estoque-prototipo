@@ -1,6 +1,15 @@
 # Pedidos → reserva → separação → expedição
 
-Fluxo local demonstrativo, disponível no menu **Pedidos**. Não integra ERP, prontuário, faturamento ou transportadora. Hospital e responsável são campos informados, sem autenticação. Use exemplos fictícios e não cadastre dados de pacientes.
+Fluxo local demonstrativo, disponível no menu **Pedidos** (`#/pedidos`). Não integra ERP, prontuário, faturamento ou transportadora. Hospital e responsável são campos informados, sem autenticação. Use exemplos fictícios e não cadastre dados de pacientes.
+
+## Orientação na tela
+
+- O detalhe do pedido mostra uma barra de quatro etapas (criado, reserva, conferência, expedição) com a quantidade concluída em cada uma e a etapa atual destacada.
+- A lista mostra, para cada pedido aberto, reservado/solicitado e conferido/reservado.
+- Cada item indica “x / y un. reservadas” e, quando falta saldo, se ainda há lote elegível na unidade.
+- Com a expedição bloqueada, a seção 3 lista exatamente o que falta (reservar N un. de um produto, conferir N un. de um lote, lote que deixou de ser elegível). Com tudo pronto, o botão indica se falta a referência de transporte ou a confirmação.
+- A reserva parcial gera um aviso de atenção com a quantidade que falta, e não uma mensagem de sucesso.
+- O cancelamento informa quantas unidades serão liberadas e só é habilitado com o motivo preenchido.
 
 ## Criar um pedido
 

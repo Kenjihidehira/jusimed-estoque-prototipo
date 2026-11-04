@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { makeDemoData, normalizeData, availableQuantity, orderReservedQuantity } from '../src/data.ts';
 import { allocate, addPosition, moveStock, submitCount, reviewCount } from '../src/domain.ts';
+import { lotTrace } from '../src/lotTrace.ts';
 import { createOrder, reserveOrder, reserveByExpiry, releaseOrderAllocation, checkOrderAllocation, resetOrderCheck, cancelOrder, dispatchOrder, orderStage, orderMetrics, todayDate } from '../src/orderDomain.ts';
 
 const input = (extra = {}) => ({ reference: 'PED-001', hospital: 'Hospital demonstrativo', procedure: 'Coluna demonstrativa', neededAt: todayDate(), unit: 'Curitiba', responsible: 'Equipe demo', notes: '', lines: [{ productId: 'p1', quantity: 3 }], ...extra });
@@ -162,4 +163,31 @@ test('indicadores refletem estágio, prazo e unidade de origem', () => {
   assert.deepEqual(orderMetrics(data),{open:1,incomplete:0,ready:1,urgent:0});
   data=dispatchOrder(data,latest(data).id,'ROM-001');
   assert.deepEqual(orderMetrics(data),{open:0,incomplete:0,ready:0,urgent:0});
+});
+
+test('ficha do lote reúne saldo, pedidos, movimentações e contagens só daquela posição', () => {
+  let data = makeDemoData();
+  // Mesmo lote em outro local (registro fictício de teste) não entra na ficha de s1.
+  data = addPosition(data, { productId: 'p1', lot: 'PP26A091', location: 'Curitiba · TESTE-UX-99', expiresAt: data.stock[0].expiresAt, quantity: 4 });
+  data = moveStock(data, data.stock.at(-1).id, 'Saída', 1);
+  data = checked(reserve(createOrder(data, input({ reference: 'TESTE-UX-LOTE', lines: [{ productId: 'p1', quantity: 3 }] }))));
+  const before = lotTrace(data, 's1');
+  const c = before.composition;
+  assert.equal(c.available + c.orderReserved + c.internalReserved + c.blocked + c.quarantined + c.expiredFree, before.stock.quantity);
+  assert.equal(c.orderReserved, 3);
+  assert.equal(c.internalReserved, 2);
+  assert.equal(before.orders.length, 1);
+  assert.equal(before.orders[0].reserved, 3);
+  assert.equal(before.orders[0].checked, 3);
+  assert.ok(before.movements.every((m) => m.from === 'Curitiba · A1-02-03' || m.to === 'Curitiba · A1-02-03'));
+  data = dispatchOrder(data, latest(data).id, 'ROM-TESTE-UX');
+  const after = lotTrace(data, 's1');
+  assert.equal(after.orders[0].order.status, 'Expedido');
+  assert.equal(after.orders[0].shipped, 3);
+  assert.equal(after.composition.orderReserved, 0);
+  assert.equal(after.movements[0].orderId, latest(data).id);
+  data = submitCount(data, 's1', after.stock.revision, after.stock.quantity, '');
+  assert.equal(lotTrace(data, 's1').counts.length, 1);
+  assert.equal(lotTrace(data, data.stock.at(-1).id).counts.length, 0);
+  assert.equal(lotTrace(data, 'inexistente'), null);
 });

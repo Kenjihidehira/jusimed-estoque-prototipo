@@ -107,6 +107,15 @@ test('CSV preserva delimitadores e quebras entre aspas; exportação neutraliza 
   assert.throws(() => parseCsv('a;b\n"incompleto'), /aspas/);
   assert.equal(csvCell('=1+1'), '"\'=1+1"');
 });
+test('prévia da importação mostra a validade normalizada também nas linhas com erro', () => {
+  const data = makeDemoData(), rows = parseCsv(template);
+  rows.push([...rows[1]]); rows[2][0] = 'TESTE-UX-IMP'; rows[2][6] = 'TESTE-UX-LOTE'; rows[2][8] = '31/12/2028'; rows[2][9] = 'abc';
+  const preview = inspectImport(rows, data).rows;
+  assert.equal(preview[0].expiresAt, '2028-12-31');
+  assert.equal(preview[1].expiresAt, '2028-12-31');
+  assert.ok(preview[1].error);
+  assert.equal(data.stock.length, 8);
+});
 test('códigos numéricos do Excel não passam sem preservar zeros iniciais', () => {
   const rows = parseCsv(template); rows[1][0] = 123;
   assert.match(inspectImport(rows, makeDemoData()).rows[0].error, /texto/);

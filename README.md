@@ -19,9 +19,11 @@ Abra o endereço exibido no terminal. Para testar a leitura pela câmera em um c
 
 ## O que funciona nesta versão
 
-- **Dashboard** empresarial baseado nos padrões do Patrimônio Ops: contexto da base, seis indicadores clicáveis, atenção da gestão, tendência de movimentações e cobertura dos registros.
+- Navegação no topo com endereço por área (`#/dashboard`, `#/estoque`, `#/pedidos`…): voltar/avançar do navegador funcionam; menu recolhível no celular com Esc e retorno de foco.
+- **Dashboard** empresarial baseado nos padrões do Patrimônio Ops: contexto da base, seis indicadores clicáveis, composição do saldo físico (disponível × reservas de pedido e internas × bloqueio × quarentena × vencido), pendências de pedidos com a próxima ação, atenção da gestão, tendência de movimentações e cobertura dos registros.
 - Visão de operação com prioridades e movimentações recentes.
-- Consulta de saldo por produto, lote e localização, com busca.
+- Consulta de saldo por produto, lote e localização, com busca, filtro por situação e colunas separadas de físico, disponível e comprometido (reserva de pedido distinta da reserva interna).
+- **Ficha do lote** (`#/estoque/<id>`): painel ao lado da lista (tela cheia abaixo de 1280 px) com validade, local, campo de UDI ainda não registrado, composição do saldo, situações, pedidos vinculados, movimentações, contagens e alterações da posição.
 - Consulta por código do produto ou lote, digitado, lido pela câmera ou por bipador USB/Bluetooth em modo teclado no campo de leitura.
 - Cadastro e edição de produtos, fabricante, fornecedor, mínimo e posições por lote/local/validade.
 - Importação local de Excel (.xlsx) e CSV com prévia, validação de todas as linhas e bloqueio de duplicidades. Modelo disponível na interface.
@@ -64,6 +66,6 @@ Os testes verificam migração, disponibilidade, limites de saldo, transferênci
 
 ## Estrutura
 
-`src/data.ts` define dados fictícios e migração local. `src/domain.ts` concentra as regras de estoque e contagem. `src/importing.ts` valida CSV/Excel. `src/Catalog.tsx`, `src/StockControls.tsx` e `src/Inventory.tsx` implementam os novos módulos; `src/App.tsx` integra a navegação e `src/Analytics.tsx` o Dashboard. Os arquivos CSS preservam a base empresarial e a proposta de identidade Jusimed, com adaptações mobile em `src/modules.css`.
+`src/data.ts` define dados fictícios e migração local. `src/domain.ts` concentra as regras de estoque e contagem. `src/importing.ts` valida CSV/Excel. `src/Catalog.tsx`, `src/StockControls.tsx` e `src/Inventory.tsx` implementam os novos módulos; `src/LotSheet.tsx` mostra a ficha do lote a partir das consultas puras de `src/lotTrace.ts`; `src/App.tsx` integra a navegação e `src/Analytics.tsx` o Dashboard. O CSS parte dos tokens de `src/styles.css`, com estilos por área em `src/analytics.css`, `src/modules.css` e `src/orders.css` (detalhes em [direção visual](docs/direcao-visual.md)).
 
 O fluxo de pedidos fica em `src/OrderWorkspace.tsx`, com regras puras em `src/orderDomain.ts` e apresentação em `src/orders.css`. A base local usa a versão 3, com migração que preserva os saldos existentes.

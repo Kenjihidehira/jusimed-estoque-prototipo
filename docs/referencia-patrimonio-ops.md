@@ -7,7 +7,7 @@ O projeto de referência é o **Patrimônio Ops Control**, na pasta irmã `work/
 | Patrimônio Ops | Adaptação para estoque médico |
 | --- | --- |
 | Navegação e cabeçalho de gestão | Menu superior com dashboard, operação, inventário por lote, leitura, movimentações e alertas |
-| Paleta empresarial azul, superfícies claras e divisórias discretas | Base em `src/patrimonio-theme.css`, personalizada em `src/jusimed-theme.css` |
+| Paleta empresarial azul, superfícies claras e divisórias discretas | Consolidada nos tokens de `src/styles.css` (ver [direção visual](direcao-visual.md)) |
 | Contexto do ambiente e origem dos indicadores | Faixa “Cenário da proposta”, com aviso de dados fictícios |
 | Indicadores executivos clicáveis | Seis indicadores que abrem inventário, alertas ou histórico |
 | “Atenção da gestão” com pendências objetivas | Lotes a vencer, vencidos e produtos abaixo do mínimo |
